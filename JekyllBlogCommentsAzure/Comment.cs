@@ -15,7 +15,6 @@ namespace JekyllBlogCommentsAzure
     class Comment
     {
         struct MissingRequiredValue { } // Placeholder for missing required form values
-        static readonly Regex validEmail = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$"); // Simplest form of email validation
         static readonly Regex validPathChars = new Regex(@"[^a-zA-Z0-9-]"); // Valid characters when mapping from the blog post slug to a file path
 
         /// <summary>
@@ -37,8 +36,6 @@ namespace JekyllBlogCommentsAzure
                 );
 
             errors = values.Where(p => p.Value is MissingRequiredValue).Select(p => $"Form value missing for {p.Key}").ToList();
-            if (values["email"] is string s && !validEmail.IsMatch(s))
-                errors.Add("email not in correct format");
 
             comment = errors.Any() ? null : (Comment)constructor.Invoke(values.Values.ToArray());
             var isFormValid = !errors.Any();
@@ -54,13 +51,11 @@ namespace JekyllBlogCommentsAzure
                 : TypeDescriptor.GetConverter(targetType).ConvertFrom(parameter);
         }
 
-        public Comment(string post_id, string message, string name, string email = null, Uri url = null)
+        public Comment(string post_id, string message, string name)
         {
             this.post_id = validPathChars.Replace(post_id, "-");
             this.message = message;
             this.name = name;
-            this.email = email;
-            this.url = url;
 
             date = DateTime.UtcNow;
             id = new { this.post_id, this.name, this.message, date }.GetHashCode().ToString("x8");
@@ -72,10 +67,6 @@ namespace JekyllBlogCommentsAzure
         public string id { get; }
         public DateTime date { get; }
         public string name { get; }
-        public string email { get; }
-
-        [YamlMember(typeof(string))]
-        public Uri url { get; }
 
         public string message { get; }
 
