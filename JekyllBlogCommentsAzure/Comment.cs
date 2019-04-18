@@ -54,7 +54,7 @@ namespace JekyllBlogCommentsAzure
                 : TypeDescriptor.GetConverter(targetType).ConvertFrom(parameter);
         }
 
-        public Comment(string post_id, string message, string name, string email = null, Uri url = null, string avatar = null)
+        public Comment(string post_id, string message, string name, string email = null, Uri url = null)
         {
             this.post_id = validPathChars.Replace(post_id, "-");
             this.message = message;
@@ -64,8 +64,6 @@ namespace JekyllBlogCommentsAzure
 
             date = DateTime.UtcNow;
             id = new { this.post_id, this.name, this.message, date }.GetHashCode().ToString("x8");
-            if (Uri.TryCreate(avatar, UriKind.Absolute, out Uri avatarUrl))
-                this.avatar = avatarUrl;
         }
 
         [YamlIgnore]
@@ -75,10 +73,6 @@ namespace JekyllBlogCommentsAzure
         public DateTime date { get; }
         public string name { get; }
         public string email { get; }
-        public string score { get; set; }
-
-        [YamlMember(typeof(string))]
-        public Uri avatar { get; }
 
         [YamlMember(typeof(string))]
         public Uri url { get; }
