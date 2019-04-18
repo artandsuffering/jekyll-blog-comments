@@ -44,18 +44,6 @@ namespace JekyllBlogCommentsAzure
             var isFormValid = !errors.Any();
             var config = PostCommentToPullRequestFunction.config;
 
-            if (isFormValid && !string.IsNullOrEmpty(config.SentimentAnalysisSubscriptionKey))
-            {
-                var textAnalysis = new SentimentAnalysis(config.SentimentAnalysisSubscriptionKey,
-                    config.SentimentAnalysisRegion,
-                    config.SentimentAnalysisLang);
-                comment.score = textAnalysis.Analyze(comment.message);
-            }
-            else
-            {
-                comment.score = "Not configured";
-            }
-
             return isFormValid;
         }
 
